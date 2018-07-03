@@ -1,0 +1,1 @@
+include ':app', ':precent-star-view', ':app-java'
