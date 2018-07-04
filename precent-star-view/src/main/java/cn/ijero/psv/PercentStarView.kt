@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.error
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -20,7 +19,6 @@ constructor(
     private var mCount = 5
     private var mMax = 100
     private var mProgress = 100
-    private var mSpacing = 0
     private var mBackColor = Color.parseColor("#FFF0F0F0")
     private var mStarBackColor = Color.parseColor("#FFFFFFFF")
     private var mProgressColor = Color.YELLOW
@@ -53,6 +51,7 @@ constructor(
         style = Paint.Style.FILL
         isAntiAlias = true
         color = mProgressColor
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
     }
 
     private var mStarSize = 0
@@ -65,7 +64,6 @@ constructor(
     private fun applyStyle(attrs: AttributeSet?) {
         attrs ?: return
 
-        mSpacing = dip(8)
         mStarSize = dip(50)
         mOuterRadius = (mStarSize / 2).toFloat()
         mInnerRadius = (mStarSize / 5).toFloat()
@@ -80,7 +78,7 @@ constructor(
         val size = MeasureSpec.getSize(widthMeasureSpec)
 
         if (mode == MeasureSpec.AT_MOST) {
-            return mStarSize * mCount + mSpacing * (mCount - 1) + paddingLeft + paddingRight
+            return mStarSize * mCount + paddingLeft + paddingRight
         }
 
         return size
@@ -102,31 +100,55 @@ constructor(
         super.onDraw(canvas)
 
         canvas.drawBack()
-        canvas.translate(0F, mStarSize * 0.05f) // 减少上下间距差
+
+        canvas.translate(mStarSize * 0.025f, mStarSize * 0.05f) // 减少上下和左右的间距差
+
+        canvas.save()
         canvas.drawStars(mStarBackPaint)
+        canvas.restore()
         canvas.drawStars(mStrokePaint)
+        canvas.restore()
+        canvas.drawProgress()
     }
 
+
+    private fun Canvas.drawProgress() {
+//        drawRect(getCanDrawingRect(), mStarBackPaint.apply {
+//            color = mProgressColor
+////            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+//        })
+    }
 
     private fun Canvas.drawBack() {
         drawRect(getCanDrawingRect(), mBackPaint)
     }
 
     private fun Canvas.drawStars(paint: Paint) {
+        for (i in 0 until mCount) {
+            if (i == 0) {
+                translate(paddingStart.toFloat(), paddingTop.toFloat())
+            } else {
+                translate(mStarSize.toFloat(), 0F)
+            }
+            drawStar(paint)
+        }
+    }
+
+    private fun Canvas.drawStar(paint: Paint) {
         val path = Path().apply {
             // 绘制辅助半径线
             val outerPos = arrayListOf<PointF>()
             val innerPos = arrayListOf<PointF>()
 
             for (i in 0 until 5) {
-                moveTo(mOuterRadius, mOuterRadius)
+                moveTo(mOuterRadius + measuredWidth, mOuterRadius)
                 val dx = (mOuterRadius + mOuterRadius * cos((i * 72F - 18F) * Math.PI / 180F)).toFloat()
                 val dy = (mOuterRadius + mOuterRadius * sin((i * 72F - 18F) * Math.PI / 180F)).toFloat()
                 outerPos.add(PointF(dx, dy))
             }
 
             for (i in 0 until 5) {
-                moveTo(mOuterRadius, mOuterRadius)
+                moveTo(mOuterRadius + measuredWidth, mOuterRadius)
                 val dx = (mOuterRadius + mInnerRadius * cos((i * 72F + 18F) * Math.PI / 180F)).toFloat()
                 val dy = (mOuterRadius + mInnerRadius * sin((i * 72F + 18F) * Math.PI / 180F)).toFloat()
                 innerPos.add(PointF(dx, dy))
@@ -151,8 +173,8 @@ constructor(
     }
 
     private fun getCanDrawingRect(): RectF {
-        return RectF(paddingLeft.toFloat(), paddingTop.toFloat(),
-                (measuredWidth - paddingRight).toFloat(),
+        return RectF(paddingStart.toFloat(), paddingTop.toFloat(),
+                (measuredWidth - paddingEnd).toFloat(),
                 (measuredHeight - paddingBottom).toFloat())
     }
 
