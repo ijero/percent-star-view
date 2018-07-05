@@ -19,8 +19,7 @@ constructor(
     private var mCount = 5
     private var mMax = 100
     private var mProgress = 100
-    private var mBackColor = Color.parseColor("#FFF0F0F0")
-    private var mStarBackColor = Color.parseColor("#FFFFFFFF")
+    private var mStarColor = Color.parseColor("#FFFFFFFF")
     private var mProgressColor = Color.YELLOW
     private var mStrokeWidth = 1F
     private var mStrokeColor = Color.parseColor("#FF666666")
@@ -34,30 +33,17 @@ constructor(
         strokeWidth = mStrokeWidth
     }
 
-    private var mStarBackPaint = Paint().apply {
+    private var mStarPaint = Paint().apply {
         style = Paint.Style.FILL
         isAntiAlias = true
-        color = mStarBackColor
         strokeWidth = mStrokeWidth
-    }
-
-    private var mBackPaint = Paint().apply {
-        style = Paint.Style.FILL
-        isAntiAlias = true
-        color = mBackColor
-    }
-
-    private var mProgressPaint = Paint().apply {
-        style = Paint.Style.FILL
-        isAntiAlias = true
-        color = mProgressColor
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+        color = mStarColor
     }
 
     private var mStarSize = 0
 
-
     init {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         applyStyle(attrs)
     }
 
@@ -95,35 +81,36 @@ constructor(
         return size
     }
 
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas.drawBack()
-
-        canvas.translate(mStarSize * 0.025f, mStarSize * 0.05f) // 减少上下和左右的间距差
-
+        // starBack
+        canvas.translate(0F, mStarSize * 0.05f) // 减少上下和左右的间距差
         canvas.save()
-        canvas.drawStars(mStarBackPaint)
+        mStarPaint.color = mStarColor
+        canvas.drawStars(mStarPaint)
         canvas.restore()
+        canvas.save()
+
+        // stroke
         canvas.drawStars(mStrokePaint)
         canvas.restore()
-        canvas.drawProgress()
-    }
 
+//        canvas.drawProgress()
+    }
 
     private fun Canvas.drawProgress() {
-//        drawRect(getCanDrawingRect(), mStarBackPaint.apply {
-//            color = mProgressColor
-////            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-//        })
-    }
+        mStarPaint.color = mProgressColor
+        mStarPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
 
-    private fun Canvas.drawBack() {
-        drawRect(getCanDrawingRect(), mBackPaint)
+        drawRect(RectF(paddingStart.toFloat(), paddingTop.toFloat(),
+                (measuredWidth - paddingEnd).toFloat() - 240,
+                (measuredHeight - paddingBottom).toFloat()), mStarPaint)
+        mStarPaint.xfermode = null
     }
 
     private fun Canvas.drawStars(paint: Paint) {
+
         for (i in 0 until mCount) {
             if (i == 0) {
                 translate(paddingStart.toFloat(), paddingTop.toFloat())
@@ -132,10 +119,12 @@ constructor(
             }
             drawStar(paint)
         }
+
+        translate(0F, 0F)
     }
 
     private fun Canvas.drawStar(paint: Paint) {
-        val path = Path().apply {
+        Path().apply {
             // 绘制辅助半径线
             val outerPos = arrayListOf<PointF>()
             val innerPos = arrayListOf<PointF>()
@@ -166,9 +155,8 @@ constructor(
             lineTo(innerPos[4].x, innerPos[4].y)
 
             close()
+            drawPath(this, paint)
         }
-
-        drawPath(path, paint)
 
     }
 
