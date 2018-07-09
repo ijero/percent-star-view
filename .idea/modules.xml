@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/StarView.iml" filepath="$PROJECT_DIR$/StarView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app-java/app-java.iml" filepath="$PROJECT_DIR$/app-java/app-java.iml" />
-      <module fileurl="file://$PROJECT_DIR$/percent-star-view.iml" filepath="$PROJECT_DIR$/percent-star-view.iml" />
       <module fileurl="file://$PROJECT_DIR$/precent-star-view/precent-star-view.iml" filepath="$PROJECT_DIR$/precent-star-view/precent-star-view.iml" />
     </modules>
   </component>

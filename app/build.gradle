@@ -3,13 +3,15 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion setup.cSdk
+
     defaultConfig {
         applicationId "cn.ijero.starview"
-        minSdkVersion 19
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion setup.mSdk
+        targetSdkVersion setup.tSdk
+        versionCode setup.vCode
+        versionName setup.vName
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

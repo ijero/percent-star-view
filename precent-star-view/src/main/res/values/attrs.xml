@@ -5,9 +5,10 @@
         <attr name="psv_starProgressColor" format="color" />
         <attr name="psv_starStrokeColor" format="color" />
         <attr name="psv_starStrokeWidth" format="dimension" />
+        <attr name="psv_isStrokeOverride" format="boolean" />
         <attr name="psv_starCount" format="integer" />
-        <attr name="psv_starPlump" format="float" />
-        <attr name="psv_starSize" format="integer" />
+        <attr name="psv_starBMI" format="float" />
+        <attr name="psv_starSize" format="dimension" />
         <attr name="psv_max" format="integer" />
         <attr name="psv_progress" format="integer" />
 

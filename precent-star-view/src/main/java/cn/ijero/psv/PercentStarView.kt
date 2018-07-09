@@ -19,9 +19,9 @@ constructor(
 ) : View(context, attrs, defStyleAttr), AnkoLogger {
 
     companion object {
-        const val MIN_PLUMP = 0.3F
-        const val DEF_PLUMP = 0.4F
-        const val MAX_PLUMP = 0.8F
+        const val MIN_BMI = 0.2F
+        const val DEF_BMI = 0.4F
+        const val MAX_BMI = 0.8F
         const val INT_INVALID = -1
     }
 
@@ -67,15 +67,15 @@ constructor(
             invalidate()
         }
 
+
     var starSize = INT_INVALID
         set(value) {
             field = value
             mOuterRadius = (field / 2).toFloat()
         }
 
-
-    @FloatRange(from = MIN_PLUMP.toDouble(), to = MAX_PLUMP.toDouble())
-    var plump = DEF_PLUMP
+    @FloatRange(from = MIN_BMI.toDouble(), to = MAX_BMI.toDouble())
+    var bmi = DEF_BMI
         set(value) {
             field = value
             mInnerRadius = mOuterRadius * field
@@ -107,6 +107,11 @@ constructor(
         color = starBackColor
     }
 
+    var isStrokeOverride = false
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     private val mLayerRectF by lazy {
         RectF(0F, 0F, measuredWidth.toFloat(), measuredHeight.toFloat())
@@ -123,8 +128,8 @@ constructor(
             throw IllegalArgumentException("The 'count' should > 0 .")
         }
 
-        if (plump < MIN_PLUMP || plump > MAX_PLUMP) {
-            throw IllegalArgumentException("The 'plump' must be range in '0.4' to '0.8'.")
+        if (bmi < MIN_BMI || bmi > MAX_BMI) {
+            throw IllegalArgumentException("The 'bmi' must be range in '0.4' to '0.8'.")
         }
 
         if (progress < 0) {
@@ -140,8 +145,7 @@ constructor(
         }
 
         mOuterRadius = starSize.toFloat() * 0.5F
-        mInnerRadius = mOuterRadius * plump
-
+        mInnerRadius = mOuterRadius * bmi
 
     }
 
@@ -154,10 +158,11 @@ constructor(
         starStrokeColor = ta.getColor(R.styleable.PercentStarView_psv_starStrokeColor, starStrokeColor)
         starStrokeWidth = ta.getDimensionPixelSize(R.styleable.PercentStarView_psv_starStrokeWidth, starStrokeWidth)
         count = ta.getInt(R.styleable.PercentStarView_psv_starCount, count)
-        plump = ta.getFloat(R.styleable.PercentStarView_psv_starPlump, plump)
+        bmi = ta.getFloat(R.styleable.PercentStarView_psv_starBMI, bmi)
         starSize = ta.getDimensionPixelSize(R.styleable.PercentStarView_psv_starSize, starSize)
         max = ta.getInt(R.styleable.PercentStarView_psv_max, max)
         progress = ta.getInt(R.styleable.PercentStarView_psv_progress, progress)
+        isStrokeOverride = ta.getBoolean(R.styleable.PercentStarView_psv_isStrokeOverride, isStrokeOverride)
 
         ta.recycle()
 
@@ -199,23 +204,38 @@ constructor(
         mStarPaint.color = starBackColor
         canvas.drawStars(mStarPaint)
         canvas.restore()
-        canvas.save()
 
         // stroke
-        canvas.drawStars(mStrokePaint)
+        if (!isStrokeOverride) {
+            canvas.save()
+            canvas.drawStars(mStrokePaint)
+            canvas.restore()
+        }
+
+        canvas.save()
+        canvas.drawProgress()
         canvas.restore()
 
-        canvas.drawProgress()
+        // stroke
+        if (isStrokeOverride) {
+            canvas.save()
+            canvas.drawStars(mStrokePaint)
+            canvas.restore()
+        }
+
         canvas.restoreToCount(saveLayer)
+
     }
 
     private fun Canvas.drawProgress() {
         mStarPaint.color = starProgressColor
 
-        mStarPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+//        mStarPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+
+        val progress = this@PercentStarView.progress.toFloat() / this@PercentStarView.max.toFloat()
 
         drawRect(RectF(paddingStart.toFloat(), paddingTop.toFloat(),
-                (measuredWidth - paddingEnd).toFloat() - 240,
+                (measuredWidth - paddingEnd ) * progress ,
                 (measuredHeight - paddingBottom).toFloat()), mStarPaint)
 
         mStarPaint.xfermode = null
