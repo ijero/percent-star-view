@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PercentStarView">
+        <attr name="psv_starBackColor" format="color" />
+        <attr name="psv_starProgressColor" format="color" />
+        <attr name="psv_starStrokeColor" format="color" />
+        <attr name="psv_starStrokeWidth" format="dimension" />
+        <attr name="psv_starCount" format="integer" />
+        <attr name="psv_starPlump" format="float" />
+        <attr name="psv_starSize" format="integer" />
+        <attr name="psv_max" format="integer" />
+        <attr name="psv_progress" format="integer" />
+
+    </declare-styleable>
+</resources>
