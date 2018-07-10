@@ -8,14 +8,13 @@ import android.util.TypedValue;
 import cn.ijero.psv.PercentStarView;
 
 public class MainActivity extends AppCompatActivity {
-    private PercentStarView percentStarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        percentStarView = findViewById(R.id.mainPercentStarView);
+        PercentStarView percentStarView = findViewById(R.id.mainPercentStarView);
         percentStarView.max(200)
                 .progress(120)
                 .bmi(0.3F)
