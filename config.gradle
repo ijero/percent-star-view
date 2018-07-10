@@ -1,0 +1,13 @@
+ext {
+    setup = [
+            cSdk : 27,
+            mSdk : 19,
+            tSdk : 27,
+            vCode: 1,
+            vName: "0.1.0",
+    ]
+
+    kotlin_version = '1.2.30'
+    anko_version = '0.10.5'
+    dokka_version = '0.9.17'
+}
