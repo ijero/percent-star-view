@@ -19,7 +19,7 @@ dependencies：
 ```groovy
 implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 implementation "org.jetbrains.anko:anko-commons:$anko_version"
-implementation 'cn.ijero.psv:percent-star-view:0.1.0'
+implementation 'cn.ijero.psv:percent-star-view:0.1.1'
 
 ```
 
