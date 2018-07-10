@@ -4,7 +4,7 @@ ext {
             mSdk : 19,
             tSdk : 27,
             vCode: 1,
-            vName: "1.0",
+            vName: "0.1.0",
     ]
 
     kotlin_version = '1.2.30'

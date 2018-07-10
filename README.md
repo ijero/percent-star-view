@@ -1,5 +1,16 @@
 # percent-star-view
-percent-star-view
+
+----
+
+preview:
+![](./public/image/demo_01.jpg)
+
+dependencies：
+```groovy
+implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
+```
 
 XML:
 ```xml
@@ -33,4 +44,3 @@ percentStarView.max(200)
             .strokeWidth(1)
             .strokeOverride(true);
 ```
-
