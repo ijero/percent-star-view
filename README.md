@@ -3,12 +3,23 @@
 ----
 
 preview:
+
 ![](./public/image/demo_01.jpg)
+
+build.gradle:
+```groovy
+repositories {
+    maven {
+        url  "https://dl.bintray.com/jero/android"
+    }
+}
+```
 
 dependencies：
 ```groovy
 implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 implementation "org.jetbrains.anko:anko-commons:$anko_version"
+implementation 'cn.ijero.psv:percent-star-view:0.1.0'
 
 ```
 
@@ -33,14 +44,29 @@ XML:
 
 JAVA:
 ```java
+PercentStarView percentStarView = findViewById(R.id.mainPercentStarView);
 percentStarView.max(200)
+        .progress(120)
+        .bmi(0.3F)
+        .count(4)
+        .starBackColor(Color.WHITE)
+        .starProgressColor(Color.RED)
+        .starStrokeColor(Color.parseColor("#FF666666"))
+        .starSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics()))
+        .strokeWidth(1)
+        .strokeOverride(true);
+```
+
+kotlin:
+```kotlin
+mainPercentStarView.max(200)
             .progress(120)
-            .bmi(0.3F)
+            .bmi(0.3f)
             .count(4)
             .starBackColor(Color.WHITE)
             .starProgressColor(Color.RED)
             .starStrokeColor(Color.parseColor("#FF666666"))
-            .starSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics()))
-            .strokeWidth(1)
-            .strokeOverride(true);
+            .starSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40f, resources.displayMetrics).toInt())
+            .strokeWidth(1f)
+            .strokeOverride(true)
 ```
