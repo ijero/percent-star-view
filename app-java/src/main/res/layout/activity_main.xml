@@ -7,14 +7,19 @@
     tools:context=".MainActivity">
 
     <cn.ijero.psv.PercentStarView
+        android:id="@+id/mainPercentStarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
         app:psv_isStrokeOverride="true"
         app:psv_max="100"
-        app:psv_progress="80"
+        app:psv_progress="15"
         app:psv_starBMI="0.5"
+        app:psv_starBackColor="@color/colorPrimary"
         app:psv_starCount="5"
-        app:psv_starSize="60dp" />
+        app:psv_starProgressColor="@color/colorAccent"
+        app:psv_starSize="50dp"
+        app:psv_starStrokeColor="@color/colorPrimary"
+        app:psv_starStrokeWidth="1px" />
 
 </RelativeLayout>
