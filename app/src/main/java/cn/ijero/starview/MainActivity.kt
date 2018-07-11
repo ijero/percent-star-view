@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
         mainPercentStarView.max(200)
                 .progress(120)
-                .bmi(0.3f)
+                .bmi(0.9f)
                 .count(4)
                 .starBackColor(Color.WHITE)
                 .starProgressColor(Color.RED)
