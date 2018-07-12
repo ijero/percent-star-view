@@ -11,6 +11,7 @@
         <attr name="psv_starSize" format="dimension" />
         <attr name="psv_max" format="integer" />
         <attr name="psv_progress" format="integer" />
+        <attr name="psv_spacing" format="dimension" />
 
     </declare-styleable>
 </resources>
