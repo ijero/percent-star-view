@@ -4,7 +4,7 @@
 
 Demo video:
 
-[./public/video/demo_01.mp4]()
+[./public/video/demo_01.mp4](./public/video/demo_01.mp4)
 
 Preview:
 
