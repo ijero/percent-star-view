@@ -23,14 +23,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private SeekBar strokeWidthSeekBar;
     private SeekBar bmiSeekBar;
     private SeekBar sizeSeekBar;
-    private SeekBar spacingSeekBar;
     private TextView maxTextView;
     private TextView progressTextView;
     private TextView countTextView;
     private TextView strokeWidthTextView;
     private TextView bmiTextView;
     private TextView sizeTextView;
-    private TextView spacingTextView;
     private ToggleButton overrideToggleButton;
     private Button strokeColorButton;
     private Button backColorButton;
@@ -56,14 +54,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         strokeWidthTextView = findViewById(R.id.strokeWidthTextView);
         bmiTextView = findViewById(R.id.bmiTextView);
         sizeTextView = findViewById(R.id.sizeTextView);
-        spacingTextView = findViewById(R.id.spacingTextView);
 
 
         overrideToggleButton = findViewById(R.id.overrideToggleButton);
         strokeColorButton = findViewById(R.id.strokeColorButton);
         backColorButton = findViewById(R.id.backColorButton);
         progressColorButton = findViewById(R.id.progressColorButton);
-        spacingSeekBar = findViewById(R.id.spacingSeekBar);
 
 //        percentStarView.max(200)
 //                .progress(120)
@@ -91,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         strokeWidthSeekBar.setProgress((int) percentStarView.strokeWidth());
         bmiSeekBar.setProgress((int) ((percentStarView.bmi() - 0.2F) * 100));
         sizeSeekBar.setProgress(percentStarView.starSize());
-        spacingSeekBar.setProgress((int) percentStarView.spacing());
 
         maxTextView.setText(String.valueOf(percentStarView.max()));
         progressTextView.setText(String.valueOf(percentStarView.progress()));
@@ -99,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         strokeWidthTextView.setText(String.valueOf(percentStarView.strokeWidth()));
         bmiTextView.setText(String.valueOf(percentStarView.bmi()));
         sizeTextView.setText(String.valueOf(percentStarView.starSize()));
-        spacingTextView.setText(String.valueOf(percentStarView.spacing()));
 
         overrideToggleButton.setChecked(percentStarView.strokeOverride());
     }
@@ -111,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         strokeWidthSeekBar.setOnSeekBarChangeListener(this);
         bmiSeekBar.setOnSeekBarChangeListener(this);
         sizeSeekBar.setOnSeekBarChangeListener(this);
-        spacingSeekBar.setOnSeekBarChangeListener(this);
         overrideToggleButton.setOnCheckedChangeListener(this);
 
         strokeColorButton.setOnClickListener(this);
@@ -151,10 +144,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             case R.id.sizeSeekBar:
                 percentStarView.starSize(progress);
                 sizeTextView.setText(String.valueOf(progress));
-                break;
-            case R.id.spacingSeekBar:
-                percentStarView.spacing(progress);
-                spacingTextView.setText(String.valueOf(progress));
                 break;
 
             default:

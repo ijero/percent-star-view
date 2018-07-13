@@ -26,13 +26,6 @@ constructor(
         const val INT_INVALID = -1
     }
 
-    private var mSpacing = 0F
-        set(value) {
-            field = value
-            requestLayout()
-            postInvalidate()
-        }
-
     private var mCount = 5
         set(value) {
             field = value
@@ -183,7 +176,6 @@ constructor(
         mMax = ta.getInt(R.styleable.PercentStarView_psv_max, mMax)
         mProgress = ta.getInt(R.styleable.PercentStarView_psv_progress, mProgress)
         mIsStrokeOverride = ta.getBoolean(R.styleable.PercentStarView_psv_isStrokeOverride, mIsStrokeOverride)
-        mSpacing = ta.getDimensionPixelSize(R.styleable.PercentStarView_psv_spacing, mSpacing.toInt()).toFloat()
 
         ta.recycle()
     }
@@ -197,7 +189,7 @@ constructor(
         val size = MeasureSpec.getSize(widthMeasureSpec)
 
         if (mode == MeasureSpec.AT_MOST) {
-            return (mStarSize + mSpacing.toInt()) * mCount + paddingRight - mSpacing.toInt()
+            return mStarSize * mCount + paddingRight
         }
         return min(size, context.resources.displayMetrics.widthPixels)
     }
@@ -253,9 +245,9 @@ constructor(
     private fun Canvas.drawProgress() {
         mStarPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         val progress = this@PercentStarView.mProgress.toFloat() / this@PercentStarView.mMax.toFloat()
-        drawRect(RectF(paddingStart.toFloat(), paddingTop.toFloat(),
-                (mStarSize * mCount + paddingLeft + paddingRight) * progress + (1 - progress) * paddingEnd - paddingEnd * progress + (mSpacing * (mCount - 1)) * progress,
-                (measuredHeight - paddingBottom).toFloat()), mStarPaint)
+        drawRect(RectF(paddingStart.toFloat() - mStarStrokeWidth, paddingTop.toFloat() - mStarStrokeWidth,
+                (mStarSize * mCount + paddingLeft + paddingRight) * progress + (1 - progress) * paddingEnd - paddingEnd * progress,
+                measuredHeight - paddingBottom + mStarStrokeWidth), mStarPaint)
         mStarPaint.xfermode = null
     }
 
@@ -264,7 +256,7 @@ constructor(
             if (i == 0) {
                 translate(paddingStart.toFloat(), paddingTop.toFloat())
             } else {
-                translate(mStarSize.toFloat() + mSpacing, 0F)
+                translate(mStarSize.toFloat(), 0F)
             }
             drawStar(paint)
         }
@@ -482,24 +474,5 @@ constructor(
      * @author Jero
      */
     fun progress() = mProgress
-
-    /**
-     *
-     * 设置星星之间的间隔距离
-     *
-     * @author Jero
-     */
-    fun spacing(spacing: Float): PercentStarView {
-        this.mSpacing = spacing
-        return this
-    }
-
-    /**
-     *
-     * 获取星星之间的间隔距离
-     *
-     * @author Jero
-     */
-    fun spacing() = mSpacing
 
 }
