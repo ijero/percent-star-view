@@ -8,6 +8,7 @@ import android.view.View
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.dip
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 class PercentStarView
@@ -28,68 +29,82 @@ constructor(
     private var mCount = 5
         set(value) {
             field = value
-            invalidate()
+            requestLayout()
+            postInvalidate()
         }
 
     private var mMax = 100
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mProgress = 60
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mStarBackColor = Color.parseColor("#FFFFFFFF")
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mStarProgressColor = Color.RED
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mStarStrokeWidth = 1F
         set(value) {
             field = value
             mStrokePaint.strokeWidth = field
+            requestLayout()
+            postInvalidate()
         }
 
     private var mStarStrokeColor = Color.parseColor("#FF666666")
         set(value) {
             field = value
             mStrokePaint.color = field
+            postInvalidate()
         }
 
     private var mStarSize = INT_INVALID
         set(value) {
             field = value
-            mOuterRadius = (field / 2).toFloat()
+            refreshStar()
         }
 
     @FloatRange(from = MIN_BMI.toDouble(), to = MAX_BMI.toDouble())
     private var mBmi = DEF_BMI
         set(value) {
+            field = when {
+                value < MIN_BMI -> MIN_BMI
+                value > MAX_BMI -> MAX_BMI
+                else -> value
+            }
+            refreshStar()
+        }
+
+    private var mIsStrokeOverride = false
+        set(value) {
             field = value
-            mInnerRadius = mOuterRadius * field
+            postInvalidate()
         }
 
     private var mOuterRadius = 0F
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mInnerRadius = 0F
         set(value) {
             field = value
-            invalidate()
+            postInvalidate()
         }
 
     private var mStrokePaint = Paint().apply {
@@ -106,20 +121,19 @@ constructor(
         color = mStarBackColor
     }
 
-    private var isStrokeOverride = false
-        set(value) {
-            field = value
-            invalidate()
-        }
-
     private val mLayerRectF by lazy {
         RectF(0F, 0F, measuredWidth.toFloat(), measuredHeight.toFloat())
     }
 
     init {
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         applyStyle(attrs)
         checkValues()
+    }
+
+    private fun refreshStar() {
+        mOuterRadius = (mStarSize / 2).toFloat()
+        mInnerRadius = mOuterRadius * mBmi
+        requestLayout()
     }
 
     private fun checkValues() {
@@ -161,10 +175,9 @@ constructor(
         mStarSize = ta.getDimensionPixelSize(R.styleable.PercentStarView_psv_starSize, mStarSize)
         mMax = ta.getInt(R.styleable.PercentStarView_psv_max, mMax)
         mProgress = ta.getInt(R.styleable.PercentStarView_psv_progress, mProgress)
-        isStrokeOverride = ta.getBoolean(R.styleable.PercentStarView_psv_isStrokeOverride, isStrokeOverride)
+        mIsStrokeOverride = ta.getBoolean(R.styleable.PercentStarView_psv_isStrokeOverride, mIsStrokeOverride)
 
         ta.recycle()
-
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -176,10 +189,9 @@ constructor(
         val size = MeasureSpec.getSize(widthMeasureSpec)
 
         if (mode == MeasureSpec.AT_MOST) {
-            return mStarSize * mCount + paddingLeft + paddingRight
+            return mStarSize * mCount + paddingRight
         }
-
-        return size
+        return min(size, context.resources.displayMetrics.widthPixels)
     }
 
     private fun getHeightSize(heightMeasureSpec: Int): Int {
@@ -189,14 +201,17 @@ constructor(
         if (mode == MeasureSpec.AT_MOST) {
             return mStarSize + paddingBottom + paddingTop
         }
-
-        return size
+        return min(size, context.resources.displayMetrics.heightPixels)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        mLayerRectF.right = measuredWidth.toFloat()
+        mLayerRectF.bottom = measuredHeight.toFloat()
+
         val saveLayer = canvas.saveLayer(mLayerRectF, mStarPaint, Canvas.ALL_SAVE_FLAG)
+
         // starBack
         canvas.translate(0F, mStarSize * 0.05f) // 减少上下和左右的间距差
 
@@ -206,7 +221,7 @@ constructor(
         canvas.restore()
 
         // stroke
-        if (!isStrokeOverride) {
+        if (!mIsStrokeOverride) {
             canvas.save()
             canvas.drawStars(mStrokePaint)
             canvas.restore()
@@ -218,32 +233,25 @@ constructor(
         canvas.restore()
 
         // stroke
-        if (isStrokeOverride) {
+        if (mIsStrokeOverride) {
             canvas.save()
             canvas.drawStars(mStrokePaint)
             canvas.restore()
         }
 
         canvas.restoreToCount(saveLayer)
-
     }
 
     private fun Canvas.drawProgress() {
-
         mStarPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-
         val progress = this@PercentStarView.mProgress.toFloat() / this@PercentStarView.mMax.toFloat()
-
-        drawRect(RectF(paddingStart.toFloat(), paddingTop.toFloat(),
-                measuredWidth * progress + (1 - progress) * paddingEnd - paddingEnd * progress,
-                (measuredHeight - paddingBottom).toFloat()), mStarPaint)
-
+        drawRect(RectF(paddingStart.toFloat() - mStarStrokeWidth, paddingTop.toFloat() - mStarStrokeWidth,
+                (mStarSize * mCount + paddingLeft + paddingRight) * progress + (1 - progress) * paddingEnd - paddingEnd * progress,
+                measuredHeight - paddingBottom + mStarStrokeWidth), mStarPaint)
         mStarPaint.xfermode = null
-
     }
 
     private fun Canvas.drawStars(paint: Paint) {
-
         for (i in 0 until mCount) {
             if (i == 0) {
                 translate(paddingStart.toFloat(), paddingTop.toFloat())
@@ -252,7 +260,6 @@ constructor(
             }
             drawStar(paint)
         }
-
         translate(0F, 0F)
     }
 
@@ -293,7 +300,6 @@ constructor(
 
     }
 
-
     /**
      *
      * 设置星星数量
@@ -307,6 +313,13 @@ constructor(
     }
 
     /**
+     * 获取星星数量
+     *
+     * @author Jero
+     */
+    fun count() = mCount
+
+    /**
      *
      * 设置描边是否覆盖进度星星
      *
@@ -314,9 +327,18 @@ constructor(
      *
      */
     fun strokeOverride(isOverride: Boolean): PercentStarView {
-        this.isStrokeOverride = isOverride
+        this.mIsStrokeOverride = isOverride
         return this
     }
+
+    /**
+     * 获取描边是否覆盖进度星星的状态
+     *
+     * @return true 表示覆盖进度，false 表示不覆盖
+     *
+     * @author Jero
+     */
+    fun strokeOverride() = mIsStrokeOverride
 
     /**
      *
@@ -331,6 +353,13 @@ constructor(
     }
 
     /**
+     * 获取星星大小
+     *
+     * @author Jero
+     */
+    fun starSize() = mStarSize
+
+    /**
      *
      * 设置形状饱满度
      *
@@ -339,10 +368,19 @@ constructor(
      * @author Jero
      *
      */
-    fun bmi(bmi: Float): PercentStarView {
+    fun bmi(@FloatRange(from = MIN_BMI.toDouble(), to = MAX_BMI.toDouble()) bmi: Float): PercentStarView {
         this.mBmi = bmi
         return this
     }
+
+    /**
+     * 获取形状饱满度
+     *
+     * 取值范围：0.2~0.8
+     *
+     * @author Jero
+     */
+    fun bmi() = mBmi
 
     /**
      *
@@ -358,7 +396,7 @@ constructor(
 
     /**
      *
-     * 设置笔画宽度
+     * 设置描边笔画宽度
      *
      * @author Jero
      *
@@ -367,6 +405,13 @@ constructor(
         this.mStarStrokeWidth = width
         return this
     }
+
+    /**
+     * 获取描边笔画宽度
+     *
+     * @author Jero
+     */
+    fun strokeWidth() = mStarStrokeWidth
 
     /**
      *
@@ -399,10 +444,17 @@ constructor(
      * @author Jero
      *
      */
-    fun max(max:Int): PercentStarView {
+    fun max(max: Int): PercentStarView {
         this.mMax = max
         return this
     }
+
+    /**
+     * 获取最大值
+     *
+     * @author Jero
+     */
+    fun max() = mMax
 
     /**
      *
@@ -411,8 +463,16 @@ constructor(
      * @author Jero
      *
      */
-    fun progress(progress:Int): PercentStarView {
+    fun progress(progress: Int): PercentStarView {
         this.mProgress = progress
         return this
     }
+
+    /**
+     * 获取进度
+     *
+     * @author Jero
+     */
+    fun progress() = mProgress
+
 }
