@@ -13,7 +13,7 @@
         android:padding="10dp"
         app:psv_isStrokeOverride="true"
         app:psv_max="100"
-        app:psv_progress="30"
+        app:psv_progress="10"
         app:psv_starBMI="0.5"
         app:psv_starBackColor="@color/colorPrimary"
         app:psv_starCount="5"

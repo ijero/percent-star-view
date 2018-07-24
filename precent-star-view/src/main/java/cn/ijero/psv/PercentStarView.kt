@@ -189,7 +189,7 @@ constructor(
         val size = MeasureSpec.getSize(widthMeasureSpec)
 
         if (mode == MeasureSpec.AT_MOST) {
-            return mStarSize * mCount + paddingRight
+            return mStarSize * mCount + paddingEnd + paddingStart
         }
         return min(size, context.resources.displayMetrics.widthPixels)
     }
